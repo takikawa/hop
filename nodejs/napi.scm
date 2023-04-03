@@ -61,7 +61,6 @@
 	   (export napi-is-error? "bgl_napi_is_error")
 	   (export napi-strict-equals? "bgl_napi_strict_equals")
 	   (export napi-typeof "bgl_napi_typeof")
-	   (export napi-uvloop "bgl_napi_uvloop")
 	   (export napi-jsstring? "bgl_napi_jsstringp")
 	   (export napi-jsstring->string "bgl_napi_jsstring_to_string")
 	   (export napi-jsstring->string-latin1 "bgl_napi_jsstring_to_string_latin1")
@@ -74,6 +73,8 @@
 	   (export napi-wrap "bgl_napi_wrap")
 	   (export napi-unwrap "bgl_napi_unwrap")
 	   (export napi-remove-wrap "bgl_napi_remove_wrap"))
+
+   (cond-expand (enable-libuv (extern (include "node_api.h") (export napi-uvloop "bgl_napi_uvloop"))))
    
    (export (napi-throw ::obj ::obj)
 	   (napi-throw-error ::obj ::string ::string)
@@ -105,7 +106,6 @@
 	   (napi-is-error?::bool ::obj)
 	   (napi-strict-equals?::bool ::obj ::obj)
 	   (napi-typeof::int ::obj ::obj)
-	   (napi-uvloop::$uv_loop_t ::obj)
 	   (napi-jsstring?::bool ::obj)
 	   (napi-jsstring->string::bstring ::obj)
 	   (napi-jsstring->string-latin1::bstring ::obj)
@@ -118,6 +118,9 @@
 	   (napi-wrap::obj ::obj ::obj ::obj)
 	   (napi-unwrap::obj ::obj ::obj)
 	   (napi-remove-wrap::obj ::obj ::obj)))
+	   ))
+
+    (cond-expand (enable-libuv (export (napi-uvloop::$uv_loop_t ::obj))))
 
 ;*---------------------------------------------------------------------*/
 ;*    napi-throw-error ...                                             */
@@ -377,6 +380,7 @@
 ;*---------------------------------------------------------------------*/
 ;*    napi-uvloop ...                                                  */
 ;*---------------------------------------------------------------------*/
+<<<<<<< HEAD
 (define (napi-uvloop %this)
    (with-access::JsGlobalObject %this (worker)
       (with-access::WorkerHopThread worker (%loop)
@@ -471,3 +475,11 @@
 	  (js-delete! js-object (& "%wrap") #f %this)
 	  o)
        (napi-throw-type-error %this "napi-wrap" "invalid argument")))
+=======
+(cond-expand (enable-libuv
+   (define (napi-uvloop %this)
+      (with-access::JsGlobalObject %this (worker)
+         (with-access::WorkerHopThread worker (%loop)
+   	 (with-access::UvLoop %loop ($builtin)
+   	    $builtin))))))
+>>>>>>> 298924802 (Attempts to fix the build without libuv)

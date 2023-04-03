@@ -63,7 +63,26 @@
 	  __nodejs__buffer)))
 
    (import __nodejs)
-   
+  
+   ;; Inline export doesn't work with cond-expand defined inline definitions.
+   (cond-expand
+      (enable-libuv
+       (export 
+	       (inline nodejs-stat-sync-any ::obj ::JsGlobalObject)
+	       (inline nodejs-stat-sync-get-any ::obj ::int ::JsGlobalObject)
+	       (inline nodejs-stat-sync-get-is-mode-any ::obj ::int ::JsGlobalObject)
+	       (inline nodejs-lstat-sync-any ::obj ::JsGlobalObject)
+	       (inline nodejs-lstat-sync-get-any ::obj ::int ::JsGlobalObject)
+           (inline nodejs-lstat-sync-get-is-mode-any ::obj ::int ::JsGlobalObject)))
+      (else
+       (export
+	       (nodejs-stat-sync-any ::obj ::JsGlobalObject)
+	       (nodejs-stat-sync-get-any ::obj ::int ::JsGlobalObject)
+	       (nodejs-stat-sync-get-is-mode-any ::obj ::int ::JsGlobalObject)
+	       (nodejs-lstat-sync-any ::obj ::JsGlobalObject)
+	       (nodejs-lstat-sync-get-any ::obj ::int ::JsGlobalObject)
+           (nodejs-lstat-sync-get-is-mode-any ::obj ::int ::JsGlobalObject))))
+
    (export (!js-callback0 ::obj ::WorkerHopThread ::JsGlobalObject ::JsProcedure ::obj)
 	   (!js-callback1 ::obj ::WorkerHopThread ::JsGlobalObject ::JsProcedure ::obj ::obj)
 	   (!js-callback2 ::obj ::WorkerHopThread ::JsGlobalObject ::JsProcedure ::obj ::obj ::obj)
@@ -130,19 +149,13 @@
 	   (nodejs-lchmod ::WorkerHopThread ::JsGlobalObject ::JsObject ::obj ::int ::obj)
 	   (nodejs-stat ::WorkerHopThread ::JsGlobalObject ::JsObject ::obj ::obj)
 	   (nodejs-stat-sync-string ::JsStringLiteral ::JsGlobalObject)
-	   (inline nodejs-stat-sync-any ::obj ::JsGlobalObject)
 	   (nodejs-stat-sync-get-string ::JsStringLiteral ::int ::JsGlobalObject)
-	   (inline nodejs-stat-sync-get-any ::obj ::int ::JsGlobalObject)
 	   (nodejs-stat-sync-get-is-mode-string ::JsStringLiteral ::int ::JsGlobalObject)
-	   (inline nodejs-stat-sync-get-is-mode-any ::obj ::int ::JsGlobalObject)
 	   (nodejs-fstat ::WorkerHopThread ::JsGlobalObject ::JsObject ::int ::obj)
 	   (nodejs-lstat ::WorkerHopThread ::JsGlobalObject ::JsObject ::obj ::obj)
 	   (nodejs-lstat-sync-string ::JsStringLiteral ::JsGlobalObject)
-	   (inline nodejs-lstat-sync-any ::obj ::JsGlobalObject)
 	   (nodejs-lstat-sync-get-string ::JsStringLiteral ::int ::JsGlobalObject)
-	   (inline nodejs-lstat-sync-get-any ::obj ::int ::JsGlobalObject)
 	   (nodejs-lstat-sync-get-is-mode-string ::JsStringLiteral ::int ::JsGlobalObject)
-	   (inline nodejs-lstat-sync-get-is-mode-any ::obj ::int ::JsGlobalObject)
 	   (nodejs-link ::WorkerHopThread ::JsGlobalObject ::JsObject ::obj ::obj ::obj)
 	   (nodejs-symlink ::WorkerHopThread ::JsGlobalObject ::JsObject ::obj ::obj ::obj)
 	   (nodejs-readlink ::WorkerHopThread ::JsGlobalObject ::JsObject ::obj ::obj)
@@ -220,6 +233,10 @@
 ;*    &begin!                                                          */
 ;*---------------------------------------------------------------------*/
 (define __js_strings (&begin!))
+
+(cond-expand
+   ((not enable-libuv)
+      (set! __js_strings (&init!))))
 
 (cond-expand
    (enable-libuv

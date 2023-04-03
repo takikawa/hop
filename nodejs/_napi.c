@@ -588,11 +588,11 @@ napi_after_work_cb(uv_work_t *req, int status) {
 BGL_RUNTIME_DEF napi_status
 napi_queue_async_work(napi_env _this, napi_async_work work) {
    uv_work_t *req = malloc(sizeof(uv_work_t));
-   uv_loop_t *loop = bgl_napi_uvloop(_this);
+   //uv_loop_t *loop = bgl_napi_uvloop(_this);
 
    req->data = work;
    
-   uv_queue_work(loop, req, napi_work_cb, napi_after_work_cb);
+   //uv_queue_work(loop, req, napi_work_cb, napi_after_work_cb);
    return napi_ok;
 }
 

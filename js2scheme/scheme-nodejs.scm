@@ -18,7 +18,9 @@
 	    "usage.sch"
 	    "context.sch")
 
-   (library libuv)
+   (cond-expand
+      (enable-libuv
+       (library libuv)))
    
    (import __js2scheme_ast
 	   __js2scheme_dump
@@ -78,25 +80,28 @@
 ;*---------------------------------------------------------------------*/
 ;*    stat-prop-table ...                                              */
 ;*---------------------------------------------------------------------*/
-(define stat-prop-table
-   (let* ((t (create-hashtable :weak 'open-string))
-	  (v (uv-fs-stat-cb-vector-props))
-	  (l (vector-length v)))
-      (let loop ((i (-fx (vector-length v) 1)))
-	 (when (>=fx i 0)
-	    (let ((k (vector-ref v i)))
-	       (cond
-		  ((string=? k "ctime") #unspecified)
-		  ((string=? k "atime") #unspecified)
-		  ((string=? k "mtime") #unspecified)
-		  ((string=? k "birthtime") #unspecified)
-		  ((string=? k "ctime-ns") (hashtable-put! t "ctimeMs" i))
-		  ((string=? k "mtime-ns") (hashtable-put! t "mtimeMs" i))
-		  ((string=? k "atime-ns") (hashtable-put! t "atimeMs" i))
-		  ((string=? k "birthtime-ns") (hashtable-put! t "birthtimeMs" i))
-		  (else (hashtable-put! t k i)))
-	       (loop (-fx i 1)))))
-      t))
+(cond-expand
+  (enable-libuv
+    (define stat-prop-table
+       (let* ((t (create-hashtable :weak 'open-string))
+    	  (v (uv-fs-stat-cb-vector-props))
+    	  (l (vector-length v)))
+          (let loop ((i (-fx (vector-length v) 1)))
+    	 (when (>=fx i 0)
+    	    (let ((k (vector-ref v i)))
+    	       (cond
+    		  ((string=? k "ctime") #unspecified)
+    		  ((string=? k "atime") #unspecified)
+    		  ((string=? k "mtime") #unspecified)
+    		  ((string=? k "birthtime") #unspecified)
+    		  ((string=? k "ctime-ns") (hashtable-put! t "ctimeMs" i))
+    		  ((string=? k "mtime-ns") (hashtable-put! t "mtimeMs" i))
+    		  ((string=? k "atime-ns") (hashtable-put! t "atimeMs" i))
+    		  ((string=? k "birthtime-ns") (hashtable-put! t "birthtimeMs" i))
+    		  (else (hashtable-put! t k i)))
+    	       (loop (-fx i 1)))))
+          t)))
+  (else (define stat-prop-table (create-hashtable :weak 'open-string))))
 
 ;*---------------------------------------------------------------------*/
 ;*    stat-fun ...                                                     */

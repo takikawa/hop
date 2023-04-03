@@ -175,7 +175,8 @@
    
    (define (readdir this jspath opt cb)
       (let* ((path (js-tostring jspath %this))
-	     (v (directory->vector path)))
+	     (v #f ;(directory->vector path)
+            ))
 	 (when (js-jsobject? opt)
 	    (let ((enc (js-get-jsobject opt opt (& "encoding") %this)))
 	       (cond
