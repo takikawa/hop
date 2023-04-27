@@ -632,7 +632,7 @@ fi
 bgllibdir=`$bigloo -q -eval "(begin (print (bigloo-config 'library-directory)) (exit 0))"`
 bglsharedsuffix=`$bigloo -q -eval "(begin (print (bigloo-config 'shared-lib-suffix)) (exit 0))"`
 
-for lib in libbigloo_s-$bglversion.a libbigloo_u-$bglversion.a libbigloo_s_mt-$bglversion.$bglsharedsuffix libbigloo_u_mt-$bglversion.$bglsharedsuffix; do
+for lib in libbigloo_s-$bglversion.a libbigloo_u-$bglversion.a; do
   if [ ! -f $bgllibdir/$lib ]; then
     echo "*** ERROR:configure:bigloo not propertly installed, library missing" >&2
     echo "$bgllibdir/$lib" >&2
