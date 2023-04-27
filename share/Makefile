@@ -356,7 +356,7 @@ hop-debug.js: hop-debug.scm ../runtime/sourcemap.sch values.sch
 	$(call compile3,$(HOPC),--no-use-strict --no-source-map $(BJFLAGS),$(HFLAGS),$(BLFLAGS),-c,$< -o $@)
 
 hop-builtin-serializers.js: $(BUILDETCDIR)/mkserializer.hop
-	($(call compile,$(BIGLOO),-suffix hop ,-L $(BUILDLIBDIR), -static-all-bigloo $<) && ./a.out > $@ && $(RM) -f a.out $(BUILDETCDIR)/mkserializer.o) || ($(RM) -f $@; exit 1)
+	($(call compile,$(BIGLOO) -suffix hop ,-L /opt/bigloo/lib/bigloo/4.5a -L /hop/lib/hop/3.6.0/, -static-all-bigloo $<) && ./a.out > $@ && $(RM) -f a.out $(BUILDETCDIR)/mkserializer.o) || ($(RM) -f $@; exit 1)
 
 #*---------------------------------------------------------------------*/
 #*    backends                                                         */
