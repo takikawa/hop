@@ -117,10 +117,10 @@
 	   (napi-get-date-value::double ::obj)
 	   (napi-wrap::obj ::obj ::obj ::obj)
 	   (napi-unwrap::obj ::obj ::obj)
-	   (napi-remove-wrap::obj ::obj ::obj)))
-	   ))
+	   (napi-remove-wrap::obj ::obj ::obj))
 
     (cond-expand (enable-libuv (export (napi-uvloop::$uv_loop_t ::obj))))
+    )
 
 ;*---------------------------------------------------------------------*/
 ;*    napi-throw-error ...                                             */
@@ -380,12 +380,12 @@
 ;*---------------------------------------------------------------------*/
 ;*    napi-uvloop ...                                                  */
 ;*---------------------------------------------------------------------*/
-<<<<<<< HEAD
-(define (napi-uvloop %this)
-   (with-access::JsGlobalObject %this (worker)
-      (with-access::WorkerHopThread worker (%loop)
-	 (with-access::UvLoop %loop ($builtin)
-	    $builtin))))
+(cond-expand (enable-libuv
+   (define (napi-uvloop %this)
+      (with-access::JsGlobalObject %this (worker)
+          (with-access::WorkerHopThread worker (%loop)
+              (with-access::UvLoop %loop ($builtin)
+                  $builtin))))))
 
 ;*---------------------------------------------------------------------*/
 ;*    napi-jsstring? ...                                               */
@@ -475,11 +475,3 @@
 	  (js-delete! js-object (& "%wrap") #f %this)
 	  o)
        (napi-throw-type-error %this "napi-wrap" "invalid argument")))
-=======
-(cond-expand (enable-libuv
-   (define (napi-uvloop %this)
-      (with-access::JsGlobalObject %this (worker)
-         (with-access::WorkerHopThread worker (%loop)
-   	 (with-access::UvLoop %loop ($builtin)
-   	    $builtin))))))
->>>>>>> 298924802 (Attempts to fix the build without libuv)

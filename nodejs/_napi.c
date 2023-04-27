@@ -11,9 +11,16 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <bigloo.h>
+#define BGL_NO_LIBUV
+#ifndef BGL_NO_LIBUV
 #include <uv.h>
+#endif
 #include <math.h>
 #include "node_api.h"
+
+#ifdef BGL_NO_LIBUV
+  typedef void uv_work_t;
+#endif
 
 /*---------------------------------------------------------------------*/
 /*    imports                                                          */
@@ -33,7 +40,9 @@ extern obj_t hop_js_calln(obj_t, obj_t, obj_t, obj_t);
 
 extern char *bgl_typeof();
 
+#ifndef BGL_NO_LIBUV
 extern uv_loop_t *bgl_napi_uvloop(obj_t);
+#endif
 
 static obj_t bgl_napi_method_to_procedure(napi_env _this, napi_value this, napi_callback met, void *data);
 
@@ -563,10 +572,12 @@ napi_create_async_work(napi_env _this,
 /*---------------------------------------------------------------------*/
 void
 napi_work_cb(uv_work_t *req) {
+#ifndef BGL_NO_LIBUV
    napi_async_work work = req->data;
 	   
    work->started = 1;
    work->execute(work->env, work->data);
+#endif
 }
 
 /*---------------------------------------------------------------------*/
@@ -575,10 +586,12 @@ napi_work_cb(uv_work_t *req) {
 /*---------------------------------------------------------------------*/
 void
 napi_after_work_cb(uv_work_t *req, int status) {
+#ifndef BGL_NO_LIBUV
    napi_async_work work = req->data;
 
    work->complete(work->env, napi_ok, work->data);
    free(req);
+#endif
 }
 
 /*---------------------------------------------------------------------*/
@@ -587,12 +600,14 @@ napi_after_work_cb(uv_work_t *req, int status) {
 /*---------------------------------------------------------------------*/
 BGL_RUNTIME_DEF napi_status
 napi_queue_async_work(napi_env _this, napi_async_work work) {
+#ifndef BGL_NO_LIBUV
    uv_work_t *req = malloc(sizeof(uv_work_t));
-   //uv_loop_t *loop = bgl_napi_uvloop(_this);
+   uv_loop_t *loop = bgl_napi_uvloop(_this);
 
    req->data = work;
    
-   //uv_queue_work(loop, req, napi_work_cb, napi_after_work_cb);
+   uv_queue_work(loop, req, napi_work_cb, napi_after_work_cb);
+#endif
    return napi_ok;
 }
 
